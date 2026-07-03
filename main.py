@@ -1,29 +1,43 @@
-
-# importing packages
-from pytube import YouTube
-from pathlib import Path
-import os
+import sys
 import yt_dlp
 
-# url input from user
+
+def download(url: str, filename: str) -> None:
+    ydl_opts = {
+        "outtmpl": f"./{filename}.%(ext)s",
+        "format": "bestaudio/best",
+        "postprocessors": [{
+            "key": "FFmpegExtractAudio",
+            "preferredcodec": "mp3",
+            "preferredquality": "192",
+        }],
+        "no_warnings": True,
+        "noplaylist": True,
+    }
+
+    print(f"\nDownloading: {url}")
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([url])
+    print(f"Saved → ./{filename}.mp3")
 
 
+def main():
+    url = sys.argv[1] if len(sys.argv) > 1 else input("YouTube URL: ").strip()
+    if not url:
+        print("Error: no URL provided.")
+        sys.exit(1)
 
-uri = input("Enter the URL of the video you want to download: \n>> ")
-filename = input("Enter the name you want to save the video as: \n>> ")
-Path().mkdir(
-    parents=True, exist_ok=True)
+    filename = input("Save as (no extension): ").strip()
+    if not filename:
+        print("Error: no filename provided.")
+        sys.exit(1)
 
-print("Downloading the backgrounds audio... please be patient 🙏 ")
-print(f"Downloading {filename} from {uri}")
-ydl_opts = {
-    "outtmpl": f"./{filename}.mp3",
-    "format": "bestaudio/best",
-    "extract_audio": True,
-}
+    try:
+        download(url, filename)
+    except yt_dlp.utils.DownloadError as e:
+        print(f"Download failed: {e}")
+        sys.exit(1)
 
-with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-    ydl.download([uri])
 
-# result of success
-print(filename+ " has been successfully downloaded.")
+if __name__ == "__main__":
+    main()

@@ -1,1 +1,14 @@
 .DS_Store
+.venv/
+
+# audio
+*.mp3
+*.mp4
+*.m4a
+*.webm
+*.ogg
+*.opus
+*.flac
+*.wav
+*.aac
+*.wma
